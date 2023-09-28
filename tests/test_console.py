@@ -227,7 +227,7 @@
 #     unittest.main()
 
 
-# !/usr/bin/python3
+#!/usr/bin/python3
 """Test for console"""
 import unittest
 
