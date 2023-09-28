@@ -225,9 +225,6 @@
 #
 # if __name__ == "__main__":
 #     unittest.main()
-
-
-
 """Test for console"""
 import unittest
 
