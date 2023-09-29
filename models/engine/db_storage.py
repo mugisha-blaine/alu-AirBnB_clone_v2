@@ -1,58 +1,79 @@
 #!/usr/bin/python3
-""" new class for sqlAlchemy """
+# This is the file storage class for AirBnB
+
+import os
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-from os import getenv
-from models.base_model import Base  # Assuming you have a BaseModel class
+from models import *
+
 
 class DBStorage:
     __engine = None
     __session = None
+    valid_classes = ["User", "State", "City", "Amenity", "Place", "Review"]
 
     def __init__(self):
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      format(getenv('HBNB_MYSQL_USER'),
-                                             getenv('HBNB_MYSQL_PWD'),
-                                             getenv('HBNB_MYSQL_HOST', default='localhost'),
-                                             getenv('HBNB_MYSQL_DB')),
-                                      pool_pre_ping=True)
+        self.__engine = create_engine("mysql+mysqldb://" +
+                                      os.environ['HBNB_MYSQL_USER'] +
+                                      ":" + os.environ['HBNB_MYSQL_PWD'] +
+                                      "@" + os.environ['HBNB_MYSQL_HOST'] +
+                                      ":3306/" +
+                                      os.environ['HBNB_MYSQL_DB'])
 
-        if getenv('HBNB_ENV') == 'test':
-            Base.metadata.drop_all(self.__engine)
+        try:
+            if os.environ['HBNB_MYSQL_ENV'] == "test":
+                Base.metadata.drop_all(self.__engine)
+        except KeyError:
+            pass
 
     def all(self, cls=None):
-        from models import base_model  # Importing necessary classes here
-        from models.user import User
-        from models.state import State
-        from models.city import City
-        from models.amenity import Amenity
-        from models.place import Place
-        from models.review import Review
-
-        objects = {}
-        classes = [User, State, City, Amenity, Place, Review]
-
+        storage = {}
         if cls is None:
-            classes.append(base_model.Base)
+            for cls_name in self.valid_classes:
+                for instance in self.__session.query(eval(cls_name)):
+                    storage[instance.id] = instance
+        else:
+            if cls not in self.valid_classes:
+                return
+            for instance in self.__session.query(eval(cls)):
+                storage[instance.id] = instance
 
-        for cl in classes:
-            query = self.__session.query(cl)
-            for obj in query:
-                key = "{}.{}".format(obj.__class__.__name__, obj.id)
-                objects[key] = obj
-        return objects
+        return storage
 
     def new(self, obj):
         self.__session.add(obj)
 
     def save(self):
-        self.__session.commit()
+        try:
+            self.__session.commit()
+        except:
+            self.__session.rollback()
+            raise
+        finally:
+            self.__session.close()
 
-    def delete(self, obj=None):
-        if obj:
-            self.__session.delete(obj)
+    def update(self, cls, obj_id, key, new_value):
+        res = self.__session.query(eval(cls)).filter(eval(cls).id == obj_id)
+
+        if res.count() == 0:
+            return 0
+
+        res.update({key: (new_value)})
+        return 1
 
     def reload(self):
         Base.metadata.create_all(self.__engine)
-        self.__session = scoped_session(sessionmaker(bind=self.__engine,
-                                                      expire_on_commit=False))
+        self.__session = scoped_session(sessionmaker(bind=self.__engine))
+
+    def delete(self, obj=None):
+        if obj is None:
+            return
+
+        self.__session.delete(obj)
+
+    def close(self):
+        self.__session.reload()
+        
+    def close(self):
+        self.__session.remove()
