@@ -11,4 +11,4 @@ import shlex
 class State(BaseModel, Base):
     """ State class """
     __tablename__ = "states"
-    name = Column(String(128), nullable=False))
+    name = Column(String(128), nullable=False)
