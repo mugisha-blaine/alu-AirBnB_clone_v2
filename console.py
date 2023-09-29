@@ -304,7 +304,7 @@ class HBNBCommand(cmd.Cmd):
 
             # if att_name was not quoted arg
             if not att_name and args[0] != ' ':
-                att_name = args[08]
+                att_name = args[0]
             # check for quoted val arg
             if args[2] and args[2][0] == '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
