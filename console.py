@@ -116,39 +116,35 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        if not args:
+        try:
+            if not line:
+                raise SyntaxError()
+            my_list = line.split(" ")
+
+            kwargs = {}
+            for i in range(1, len(my_list)):
+                key, value = tuple(my_list[i].split("="))
+                if value[0] == '"':
+                    value = value.strip('"').replace("_", " ")
+                else:
+                    try:
+                        value = eval(value)
+                    except (SyntaxError, NameError):
+                        continue
+                kwargs[key] = value
+
+            if kwargs == {}:
+                obj = eval(my_list[0])()
+            else:
+                obj = eval(my_list[0])(**kwargs)
+                storage.new(obj)
+            print(obj.id)
+            obj.save()
+
+        except SyntaxError:
             print("** class name missing **")
-            return
-
-        line_list = args.split(" ")
-        if line_list[0] not in HBNBCommand.classes:
+        except NameError:
             print("** class doesn't exist **")
-            return
-
-        new_instance = HBNBCommand.classes[line_list[0]]()
-
-        pair_list = line_list[1:]
-        for pair in pair_list:
-            k_v = pair.split("=")
-            key = k_v[0]
-            value = k_v[1]
-
-            if '_' in value:
-                value = value.replace("_", " ")
-            if value[0] == '"':
-                value = value.strip('"')
-            if '.' in value:
-                try:
-                    value = float(value)
-                except ValueError:
-                    pass
-
-            if value is not None and hasattr(new_instance, key):
-                setattr(new_instance, key, value)
-
-        new_instance.save()
-        print(new_instance.id)
-
 
     def help_create(self):
         """ Help information for the create method """
