@@ -4,6 +4,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from os import getenv
 from models.base_model import Base  # Assuming you have a BaseModel class
+from sqlalchemy.orm import relationship
+from models import base_model
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+
+
 
 class DBStorage:
     __engine = None
@@ -21,13 +31,6 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        from models import base_model  # Importing necessary classes here
-        from models.user import User
-        from models.state import State
-        from models.city import City
-        from models.amenity import Amenity
-        from models.place import Place
-        from models.review import Review
 
         objects = {}
         classes = [User, State, City, Amenity, Place, Review]
@@ -56,3 +59,8 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         self.__session = scoped_session(sessionmaker(bind=self.__engine,
                                                       expire_on_commit=False))
+
+    def close(self):
+        """ calls remove()
+        """
+        self.__session.close()
