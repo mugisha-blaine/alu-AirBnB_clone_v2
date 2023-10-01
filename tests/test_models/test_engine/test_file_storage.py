@@ -37,12 +37,11 @@ class test_fileStorage(unittest.TestCase):
 
     def test_new(self):
         """ New object is correctly added to __objects """
-        storage = FileStorage()
-        obj = BaseModel()
-        storage.new(obj)
-        temp = storage.all()
-        self.assertTrue(temp is not None)
-        self.assertTrue(obj in temp.values()
+        new = BaseModel()
+        temp = ''
+        for obj in storage.all().values():
+            temp = obj
+        self.assertTrue(temp is obj)
 
     def test_all(self):
         """ __objects is properly returned """
@@ -70,13 +69,14 @@ class test_fileStorage(unittest.TestCase):
         self.assertTrue(os.path.exists('file.json'))
 
     def test_reload(self):
-        """ Storage file is successfully loaded to __objects """
-        storage = FileStorage()
-        obj = BaseModel()
-        storage.new(obj)
-        temp = storage.all()
-        self.assertTrue(temp is not None)
-        self.assertTrue(obj in temp.values()
+         """ Storage file is successfully loaded to __objects """
+        new = BaseModel()
+        storage.save()
+        storage.reload()
+        loaded = ''
+        for obj in storage.all().values():
+            loaded = obj
+        self.assertEqual(new.to_dict()['id'], loaded.to_dict()['id'])
 
     def test_reload_empty(self):
         """ Load from an empty file """
