@@ -1,7 +1,14 @@
-#!/usr/bin/python3
 """ Module for testing file storage"""
 import unittest
 from models.base_model import BaseModel
+# from models.user import User
+# from models.state import State
+# from models.city import City
+# from models.amenity import Amenity
+# from models.place import Place
+# from models.review import Review
+# from models.engine.file_storage import FileStorage
+
 from models import storage
 import os
 
@@ -100,7 +107,7 @@ class test_fileStorage(unittest.TestCase):
         _id = new.to_dict()['id']
         for key in storage.all().keys():
             temp = key
-        self.assertEqual(temp, 'BaseModel' + '.' + _id)
+            self.assertEqual(temp, 'BaseModel' + '.' + _id)
 
     def test_storage_var_created(self):
         """ FileStorage object storage created """
