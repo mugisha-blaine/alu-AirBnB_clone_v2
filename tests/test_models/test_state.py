@@ -16,4 +16,5 @@ class test_state(TestBaseModel):
     def test_name3(self):
         """ """
         new = self.value()
+        self.name = "Arizona"
         self.assertEqual(type(new.name), str)
