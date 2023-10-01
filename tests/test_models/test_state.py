@@ -7,10 +7,10 @@ from models.state import State
 class test_state(TestBaseModel):
     """ """
 
-    def __init__(self, *args, **kwargs):
+     def __init__(self, *args, **kwargs):
         """ """
         super().__init__(*args, **kwargs)
-        self.name = "State"
+        self.name = "California"
         self.value = State
 
     def test_name3(self):
