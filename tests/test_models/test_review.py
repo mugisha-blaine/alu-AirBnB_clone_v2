@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 """ """
+from models.place import Place
+from models.user import User
 from tests.test_models.test_base_model import TestBaseModel
 from models.review import Review
 
 
-class test_review(TestBaseModel):
-    """ """
+class TestReview(TestBaseModel):
+    """Test for review """
 
     def __init__(self, *args, **kwargs):
         """ """
